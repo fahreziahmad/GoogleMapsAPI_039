@@ -73,12 +73,37 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_initialcamera == null) {
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Mendapatkan Lokasi..."),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pilih Alamat"),
       ),
-      body: const Center(
-        child: Text("Map will be here"),
+      body: GoogleMap(
+        initialCameraPosition: _initialcamera!,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
+        mapType: MapType.normal,
+        compassEnabled: true,
+        onMapCreated: (GoogleMapController ctrl) {
+          if (!_ctrl.isCompleted) {
+            _ctrl.complete(ctrl);
+          }
+        },
+        markers: _pickedMarker != null ? {_pickedMarker!} : {},
       ),
     );
   }
