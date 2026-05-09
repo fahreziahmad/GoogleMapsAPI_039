@@ -71,6 +71,36 @@ class _MapPageState extends State<MapPage> {
     return await Geolocator.getCurrentPosition();
   }
 
+  Future<void> _onTap(LatLng latlng) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(latlng.latitude, latlng.longitude);
+      if (placemarks.isEmpty) return;
+
+      final p = placemarks.first;
+      
+      if (!mounted) return;
+
+      setState(() {
+        _pickedMarker = Marker(
+            markerId: const MarkerId("picked"),
+            position: latlng,
+            infoWindow: InfoWindow(
+              title: p.name?.isNotEmpty == true ? p.name : "Lokasi Dipilih",
+              snippet: "${p.street}, ${p.locality}",
+            ));
+        _pickedAddress = "${p.name}, ${p.street}, ${p.locality}, ${p.country}, ${p.postalCode}";
+      });
+
+      final ctrl = await _ctrl.future;
+      await ctrl.animateCamera(CameraUpdate.newLatLng(latlng));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Gagal mengambil detail alamat untuk lokasi ini."))
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_initialcamera == null) {
@@ -104,6 +134,7 @@ class _MapPageState extends State<MapPage> {
           }
         },
         markers: _pickedMarker != null ? {_pickedMarker!} : {},
+        onTap: _onTap,
       ),
     );
   }
