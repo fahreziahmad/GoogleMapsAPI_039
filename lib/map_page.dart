@@ -101,6 +101,34 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  void _confirmSelection() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Konfirmasi Alamat"),
+        content: Text(_pickedAddress ?? "Tidak ada alamat dipilih"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context, _pickedAddress);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepPurple,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text("Pilih"),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_initialcamera == null) {
@@ -121,6 +149,13 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Pilih Alamat"),
+        actions: [
+          if (_pickedAddress != null)
+            IconButton(
+              icon: const Icon(Icons.check),
+              onPressed: _confirmSelection,
+            )
+        ],
       ),
       body: GoogleMap(
         initialCameraPosition: _initialcamera!,
