@@ -157,19 +157,118 @@ class _MapPageState extends State<MapPage> {
             )
         ],
       ),
-      body: GoogleMap(
-        initialCameraPosition: _initialcamera!,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        mapType: MapType.normal,
-        compassEnabled: true,
-        onMapCreated: (GoogleMapController ctrl) {
-          if (!_ctrl.isCompleted) {
-            _ctrl.complete(ctrl);
-          }
-        },
-        markers: _pickedMarker != null ? {_pickedMarker!} : {},
-        onTap: _onTap,
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: _initialcamera!,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            mapType: MapType.normal,
+            compassEnabled: true,
+            onMapCreated: (GoogleMapController ctrl) {
+              if (!_ctrl.isCompleted) {
+                _ctrl.complete(ctrl);
+              }
+            },
+            markers: _pickedMarker != null ? {_pickedMarker!} : {},
+            onTap: _onTap,
+          ),
+          // Current Address Tooltip
+          if (_currentAddress != null)
+            Positioned(
+              top: 16,
+              left: 16,
+              right: 60,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.my_location, size: 18, color: Colors.blue),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        "Lokasi Anda: $_currentAddress",
+                        style: const TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          // Picked Address Panel
+          if (_pickedAddress != null)
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text(
+                            "Alamat Dipilih",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _pickedAddress!,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _pickedAddress = null;
+                                  _pickedMarker = null;
+                                });
+                              },
+                              child: const Text("Hapus"),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _confirmSelection,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text("Konfirmasi"),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
