@@ -21,6 +21,54 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
+    _setupLocation();
+  }
+
+  Future<void> _setupLocation() async {
+    try {
+      final pos = await getPermission();
+      _initialcamera = CameraPosition(
+        target: LatLng(pos.latitude, pos.longitude),
+        zoom: 16,
+      );
+
+      final placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+
+      if (!mounted) return;
+
+      if (placemarks.isNotEmpty) {
+        final p = placemarks.first;
+        _currentAddress = "${p.name}, ${p.locality}, ${p.country}";
+      }
+
+      setState(() {});
+    } catch (e) {
+      if (!mounted) return;
+      _initialcamera = const CameraPosition(target: LatLng(0, 0), zoom: 2);
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  Future<Position> getPermission() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw "Layanan lokasi tidak aktif. Silakan aktifkan GPS Anda.";
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw "Izin lokasi ditolak.";
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw "Izin lokasi ditolak secara permanen. Silakan aktifkan di pengaturan.";
+    }
+
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
