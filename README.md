@@ -1,17 +1,18 @@
-# tugas12
+# Tugas 12 - Flutter Google Maps
 
-A new Flutter project.
+A Flutter project demonstrating Google Maps integration, location permissions, and geocoding.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- **Google Maps Integration**: Displaying maps and markers.
+- **Location Permissions**: Automatic permission handling using `geolocator`.
+- **Geocoding**: Converting coordinates to human-readable addresses using `geocoding`.
+- **Address Picker**: Selecting a location on the map and returning it to the main screen.
 
-A few resources to get you started if this is your first Flutter project:
+## How to Run
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone this repository.
+2. Ensure you have a valid Google Maps API Key.
+3. Update `AndroidManifest.xml` with your API Key.
+4. Run `flutter pub get`.
+5. Run the application using `flutter run`.
